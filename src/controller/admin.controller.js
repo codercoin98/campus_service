@@ -108,6 +108,28 @@ class adminController {
         const result = await adminService.getStudentInfo(pageNo, pageSize)
         ctx.body = result
     }
+    //获取用户账户流水
+    async getBalanceInfo(ctx,next) {
+        const pageNo = parseInt(ctx.request.query.pageNo)
+        const pageSize = parseInt(ctx.request.query.pageSize)
+        const result = await adminService.getBalanceInfo(pageNo, pageSize)
+        ctx.body = result
+    }
+    //获取全部用户学生认证信息
+    async getAllStudentInfo(ctx,next) {
+        const result = await adminService.getAllStudentInfo()
+        ctx.body = result
+    }
+    //获取全部的用户信息
+    async getAllUserInfo(ctx,next) {
+        const result = await adminService.getAllUserInfo()
+        ctx.body = result
+    }
+    //获取全部任务信息
+    async getAllTaskInfo(ctx,next) {
+        const result = await adminService.getAllTaskInfo()
+        ctx.body = result
+    }
 }
 
 module.exports = new adminController()

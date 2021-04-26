@@ -27,11 +27,11 @@ class adminService {
         return result[0]
     }
     //禁用用户
-    async forbiddenUser(uid,username, reason, type){
+    async forbiddenUser (uid, username, reason, type) {
         const statement1 = 'UPDATE `user` SET `is_forbidden` = 1  WHERE `uid` = ?'
         await connection.execute(statement1, [uid])
         const statement2 = 'INSERT INTO `user_forbidden` (`user_id`,`username`,`reason`,`type`) VALUES (?,?,?,?)'
-        const [result] = await connection.execute(statement2, [uid,username,reason,type])
+        const [result] = await connection.execute(statement2, [uid, username, reason, type])
         return result
     }
     //获取禁用用户
@@ -42,36 +42,61 @@ class adminService {
         return result
     }
     //解除用户禁用状态
-    async releaseUser(username) {
+    async releaseUser (username) {
         const statement = 'UPDATE `user` SET `is_forbidden` = 0 WHERE `username` = ?'
         const [result] = await connection.execute(statement, [username])
         return result
     }
     //改变禁用记录为已解除
-    async changeForbiddenStatus(username) {
+    async changeForbiddenStatus (username) {
         const statement = 'UPDATE `user_forbidden` SET `is_release` = 1 WHERE `username` = ?'
         const [result] = await connection.execute(statement, [username])
         return result
     }
     //获取用户投诉
-    async getComplainInfo(pageNo, pageSize) {
+    async getComplainInfo (pageNo, pageSize) {
         const offset = (pageNo - 1) * pageSize
         const statement = 'SELECT * FROM `user_complain` LIMIT ?,?'
         const [result] = await connection.execute(statement, [offset, pageSize])
         return result
     }
     //获取代跑任务
-    async getTaskInfo(pageNo, pageSize) {
+    async getTaskInfo (pageNo, pageSize) {
         const offset = (pageNo - 1) * pageSize
         const statement = 'SELECT * FROM `task` LIMIT ?,?'
         const [result] = await connection.execute(statement, [offset, pageSize])
         return result
     }
     //获取学生认证信息
-    async getStudentInfo(pageNo, pageSize) {
+    async getStudentInfo (pageNo, pageSize) {
         const offset = (pageNo - 1) * pageSize
         const statement = 'SELECT * FROM `user_student_info` LIMIT ?,?'
         const [result] = await connection.execute(statement, [offset, pageSize])
+        return result
+    }
+    //获取用户账户流水
+    async getBalanceInfo (pageNo, pageSize) {
+        const offset = (pageNo - 1) * pageSize
+        const statement = 'SELECT * FROM `balance_record` LIMIT ?,?'
+        const [result] = await connection.execute(statement, [offset, pageSize])
+        return result
+    }
+    //获取全部学生认证信息
+    async getAllStudentInfo () {
+        const statement = 'SELECT * FROM `user_student_info`'
+        const [result] = await connection.execute(statement)
+        return result
+    }
+    //获取全部的学生信息
+    async getAllUserInfo () {
+        const statement = 'SELECT * FROM `user`'
+        const [result] = await connection.execute(statement)
+        return result
+    }
+    //获取全部任务信息
+    async getAllTaskInfo(){
+        const statement = 'SELECT * FROM `task`'
+        const [result] = await connection.execute(statement)
         return result
     }
 }
