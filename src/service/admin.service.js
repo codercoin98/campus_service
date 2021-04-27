@@ -67,11 +67,24 @@ class adminService {
         const [result] = await connection.execute(statement, [offset, pageSize])
         return result
     }
-    //获取学生认证信息
+    //获取已处理的学生认证信息
     async getStudentInfo (pageNo, pageSize) {
         const offset = (pageNo - 1) * pageSize
-        const statement = 'SELECT * FROM `user_student_info` LIMIT ?,?'
+        const statement = 'SELECT * FROM `user_student_info`WHERE `audit_status` = 1 OR `audit_status` = 2 LIMIT ?,?'
         const [result] = await connection.execute(statement, [offset, pageSize])
+        return result
+    }
+    //获取待审核的学生认证信息
+    async getNewStudentInfo (pageNo, pageSize) {
+        const offset = (pageNo - 1) * pageSize
+        const statement = 'SELECT * FROM `user_student_info`WHERE `audit_status` = 0 LIMIT ?,?'
+        const [result] = await connection.execute(statement, [offset, pageSize])
+        return result
+    }
+    //审核学生信息
+    async handlePassAndReject (uid, status) {
+        const statement = 'UPDATE `user_student_info`SET `audit_status` = ? WHERE `user_id` = ?'
+        const [result] = await connection.execute(statement, [status, uid])
         return result
     }
     //获取用户账户流水
@@ -79,6 +92,13 @@ class adminService {
         const offset = (pageNo - 1) * pageSize
         const statement = 'SELECT * FROM `balance_record` LIMIT ?,?'
         const [result] = await connection.execute(statement, [offset, pageSize])
+        return result
+    }
+    //按类型获取账户流水
+    async searchBalance (type, pageNo, pageSize) {
+        const offset = (pageNo - 1) * pageSize
+        const statement = 'SELECT * FROM `balance_record` WHERE `type` = ? LIMIT ?,?'
+        const [result] = await connection.execute(statement, [type, offset, pageSize])
         return result
     }
     //获取全部学生认证信息
@@ -94,10 +114,83 @@ class adminService {
         return result
     }
     //获取全部任务信息
-    async getAllTaskInfo(){
+    async getAllTaskInfo () {
         const statement = 'SELECT * FROM `task`'
         const [result] = await connection.execute(statement)
         return result
+    }
+    //获取全部账户流水信息
+    async getAllBalanceInfo () {
+        const statement = 'SELECT * FROM `balance_record`'
+        const [result] = await connection.execute(statement)
+        return result
+    }
+
+    //获取total
+    //获取全部待审核学生条数
+    async getNewStudentTotal () {
+        const statement = 'SELECT COUNT(*) AS num FROM `user_student_info` WHERE `audit_status` = 0'
+        const [result] = await connection.execute(statement)
+        return result[0]
+    }
+    //获取全部学生条数
+    async getStudentTotal () {
+        const statement = 'SELECT COUNT(*) AS num FROM `user_student_info`'
+        const [result] = await connection.execute(statement)
+        return result[0]
+    }
+    //获取全部的用户条数
+    async getUserTotal () {
+        const statement = 'SELECT COUNT(*) AS num FROM `user`'
+        const [result] = await connection.execute(statement)
+        return result[0]
+    }
+    //获取全部的任务条数
+    async getTaskTotal () {
+        const statement = 'SELECT COUNT(*) AS num FROM `task`'
+        const [result] = await connection.execute(statement)
+        return result[0]
+    }
+    //获取全部的账户流水条数
+    async getBalanceTotal () {
+        const statement = 'SELECT COUNT(*) AS num FROM `balance_record`'
+        const [result] = await connection.execute(statement)
+        return result[0]
+    }
+    //查找学生信息
+    async searchStudent (university, status) {
+
+        if (status === 3 && university) {
+            const statement = "SELECT * FROM `user_student_info` WHERE `university_name` LIKE CONCAT('%',?,'%')"
+            const [result] = await connection.execute(statement, [university])
+            console.log(result)
+            return result
+        } else if (university) {
+            const statement = "SELECT * FROM `user_student_info` WHERE `university_name` LIKE CONCAT('%',?,'%') AND `audit_status` = ?"
+            const [result] = await connection.execute(statement, [university, status])
+            return result
+        } else if (!university) {
+            const statement = "SELECT * FROM `user_student_info` WHERE `audit_status` = ?"
+            const [result] = await connection.execute(statement, [status])
+            return result
+        }
+
+    }
+    //查找任务信息
+    async searchTask (type, status, pageNo, pageSize) {
+        if (!type && status) {
+            const statement = "SELECT * FROM `task` WHERE `status` = ? LIMIT ?,?"
+            const [result] = await connection.execute(statement, [status, pageNo, pageSize])
+            return result
+        } else if (type && !status) {
+            const statement = "SELECT * FROM `task` WHERE `type` = ? LIMIT ?,?"
+            const [result] = await connection.execute(statement, [type, pageNo, pageSize])
+            return result
+        } else {
+            const statement = "SELECT * FROM `task` WHERE `type` = ? AND `status` = ? LIMIT ?,?"
+            const [result] = await connection.execute(statement, [type, status, pageNo, pageSize])
+            return result
+        }
     }
 }
 

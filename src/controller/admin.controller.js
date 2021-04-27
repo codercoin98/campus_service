@@ -43,8 +43,8 @@ class adminController {
     }
     //禁用用户
     async forbiddenUser (ctx, next) {
-        const { uid,username, reason, type } = ctx.request.body
-        const result = await adminService.forbiddenUser(uid, username,reason, parseInt(type))
+        const { uid, username, reason, type } = ctx.request.body
+        const result = await adminService.forbiddenUser(uid, username, reason, parseInt(type))
         if (result.affectedRows === 1) {
             //成功
             const statusCode = 200
@@ -68,66 +68,147 @@ class adminController {
     }
     //解除用户禁用
     async releaseUser (ctx, next) {
-        const {username} = ctx.request.body
+        const { username } = ctx.request.body
         //修改用户禁用状态
         const result = await adminService.releaseUser(username)
         //修改用户禁用记录为已解除
         await adminService.changeForbiddenStatus(username)
-        if(result.affectedRows === 1) {
-              //成功
-              const statusCode = 200
-              ctx.body = {
-                  statusCode
-              }
-        }else {
-              //成功
-              const statusCode = 500
-              ctx.body = {
-                  statusCode
-              }
+        if (result.affectedRows === 1) {
+            //成功
+            const statusCode = 200
+            ctx.body = {
+                statusCode
+            }
+        } else {
+            //成功
+            const statusCode = 500
+            ctx.body = {
+                statusCode
+            }
         }
     }
     //获取用户投诉
-    async getComplainInfo(ctx,next) {
+    async getComplainInfo (ctx, next) {
         const pageNo = parseInt(ctx.request.query.pageNo)
         const pageSize = parseInt(ctx.request.query.pageSize)
         const result = await adminService.getComplainInfo(pageNo, pageSize)
         ctx.body = result
     }
     //获取代跑任务
-    async getTaskInfo(ctx,next) {
+    async getTaskInfo (ctx, next) {
         const pageNo = parseInt(ctx.request.query.pageNo)
         const pageSize = parseInt(ctx.request.query.pageSize)
         const result = await adminService.getTaskInfo(pageNo, pageSize)
         ctx.body = result
     }
-    //获取学生认证信息
-    async getStudentInfo(ctx,next) {
+    //获取已处理的学生认证信息
+    async getStudentInfo (ctx, next) {
         const pageNo = parseInt(ctx.request.query.pageNo)
         const pageSize = parseInt(ctx.request.query.pageSize)
         const result = await adminService.getStudentInfo(pageNo, pageSize)
         ctx.body = result
     }
+    //获取待审核的学生信息
+    async getNewStudentInfo (ctx, next) {
+        const pageNo = parseInt(ctx.request.query.pageNo)
+        const pageSize = parseInt(ctx.request.query.pageSize)
+        const result = await adminService.getNewStudentInfo(pageNo, pageSize)
+        ctx.body = result
+    }
+    //审核学生信息
+    async handlePassAndReject (ctx, next) {
+        const { uid, status } = ctx.request.body
+        const result = await adminService.handlePassAndReject(uid, status)
+        if (result.affectedRows === 1) {
+            const statusCode = 200
+            ctx.body = {
+                statusCode
+            }
+        } else {
+            const statusCode = 500
+            ctx.body = {
+                statusCode
+            }
+        }
+    }
     //获取用户账户流水
-    async getBalanceInfo(ctx,next) {
+    async getBalanceInfo (ctx, next) {
         const pageNo = parseInt(ctx.request.query.pageNo)
         const pageSize = parseInt(ctx.request.query.pageSize)
         const result = await adminService.getBalanceInfo(pageNo, pageSize)
         ctx.body = result
     }
     //获取全部用户学生认证信息
-    async getAllStudentInfo(ctx,next) {
+    async getAllStudentInfo (ctx, next) {
         const result = await adminService.getAllStudentInfo()
         ctx.body = result
     }
     //获取全部的用户信息
-    async getAllUserInfo(ctx,next) {
+    async getAllUserInfo (ctx, next) {
         const result = await adminService.getAllUserInfo()
         ctx.body = result
     }
     //获取全部任务信息
-    async getAllTaskInfo(ctx,next) {
+    async getAllTaskInfo (ctx, next) {
         const result = await adminService.getAllTaskInfo()
+        ctx.body = result
+    }
+    //获取全部流水信息
+    async getAllBalanceInfo (ctx, next) {
+        const result = await adminService.getAllBalanceInfo()
+        ctx.body = result
+    }
+    //获取待审核学生信息条数
+    async getNewStudentTotal (ctx, next) {
+        const result = await adminService.getNewStudentTotal()
+        ctx.body = result
+    }
+    //获取学生信息条数
+    async getStudentTotal (ctx, next) {
+        const result = await adminService.getStudentTotal()
+        ctx.body = result
+    }
+    //获取用户信息条数
+    async getUserTotal (ctx, next) {
+        const result = await adminService.getUserTotal()
+        ctx.body = result
+    }
+    //获取任务信息条数
+    async getTaskTotal (ctx, next) {
+        const result = await adminService.getTaskTotal()
+        ctx.body = result
+    }
+    //获取全部账户流水信息条数
+    async getBalanceTotal (ctx, next) {
+        const result = await adminService.getBalanceTotal()
+        ctx.body = result
+    }
+    //按类型获取账户流水
+    async searchBalance (ctx, next) {
+        const type = parseInt(ctx.request.query.type)
+        const pageNo = parseInt(ctx.request.query.pageNo)
+        const pageSize = parseInt(ctx.request.query.pageSize)
+        const result = await adminService.searchBalance(type, pageNo, pageSize)
+        ctx.body = result
+    }
+    //查找学生信息
+    async searchStudent (ctx, next) {
+        let { university, status } = ctx.request.body
+        if (status) {
+            status = parseInt(status)
+        } else {
+            status = 3
+        }
+        const result = await adminService.searchStudent(university, status)
+        ctx.body = result
+    }
+    //查找任务信息
+    async searchTask (ctx, next) {
+        const type = ctx.request.query.type
+        const status = parseInt(ctx.request.query.status)
+        const pageNo = parseInt(ctx.request.query.pageNo)
+        const pageSize = parseInt(ctx.request.query.pageSize)
+        const result = await adminService.searchTask(type, status, pageNo, pageSize)
         ctx.body = result
     }
 }
