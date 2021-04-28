@@ -1,5 +1,6 @@
 const Router = require('koa-router')
 const { login,
+    editPassword,
     getAllUser,
     getForbiddenUser,
     getUserByUsername,
@@ -21,6 +22,7 @@ const { login,
     getAllUserInfo,
     getAllTaskInfo,
     getAllBalanceInfo,
+    searchUser,
     searchStudent,
     searchTask } = require('../controller/admin.controller')
 const { verifyAuth } = require('../middleware/auth.middleware')
@@ -28,6 +30,7 @@ const adminRouter = new Router({ prefix: '/admin' })
 
 adminRouter.post('/login', login)
 
+adminRouter.post('/editPassword', verifyAuth, editPassword)
 adminRouter.get('/getAllUser', verifyAuth, getAllUser)
 
 adminRouter.get('/getForbiddenUser', verifyAuth, getForbiddenUser)
@@ -51,10 +54,12 @@ adminRouter.get('/getNewStudentInfo', verifyAuth, getNewStudentInfo)
 adminRouter.get('/getBalanceInfo', verifyAuth, getBalanceInfo)
 
 /* 表单的筛选查找 */
+//查找用户
+adminRouter.get('/searchUser',verifyAuth,searchUser)
 //查找对应的流水记录
 adminRouter.get('/searchBalance', verifyAuth, searchBalance)
 //查找学生信息
-adminRouter.post('/searchStudent', verifyAuth, searchStudent)
+adminRouter.get('/searchStudent', verifyAuth, searchStudent)
 //查找任务信息
 adminRouter.get('/searchTask', verifyAuth, searchTask)
 

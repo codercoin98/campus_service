@@ -11,7 +11,7 @@ class adminService {
     async updateAdminPassword (username, password) {
         const statement = 'UPDATE `admin` SET `admin_password` = ? WHERE `admin_account` = ?'
         const [result] = await connection.execute(statement, [password, username])
-        return result[0]
+        return result
     }
     //获取所有用户信息，分页查询
     async getAllUser (pageNo, pageSize) {
@@ -157,21 +157,41 @@ class adminService {
         const [result] = await connection.execute(statement)
         return result[0]
     }
+    //查找用户信息
+    async searchUser (keyword, region, pageNo, pageSize) {
+        if (region === 'username') {
+            const offset = (pageNo - 1) * pageSize
+            const statement = "SELECT * FROM `user` WHERE `username` LIKE CONCAT(' % ',?,' % ') LIMIT ?,?"
+            const [result] = await connection.execute(statement, [keyword, offset, pageSize])
+            return result
+        } else if (region === 'nickname') {
+            const offset = (pageNo - 1) * pageSize
+            const statement = "SELECT * FROM `user` WHERE `nickname` LIKE CONCAT(' % ',?,' % ') LIMIT ?,?"
+            const [result] = await connection.execute(statement, [keyword, offset, pageSize])
+            return result
+        }
+
+    }
     //查找学生信息
-    async searchStudent (university, status) {
+    async searchStudent (university, status, pageNo, pageSize) {
 
         if (status === 3 && university) {
-            const statement = "SELECT * FROM `user_student_info` WHERE `university_name` LIKE CONCAT('%',?,'%')"
-            const [result] = await connection.execute(statement, [university])
-            console.log(result)
+            //有学校关键字，没有状态
+            const offset = (pageNo - 1) * pageSize
+            const statement = "SELECT * FROM `user_student_info` WHERE `university_name` LIKE CONCAT('%',?,'%') LIMIT ?,?"
+            const [result] = await connection.execute(statement, [university, offset, pageSize])
             return result
-        } else if (university) {
-            const statement = "SELECT * FROM `user_student_info` WHERE `university_name` LIKE CONCAT('%',?,'%') AND `audit_status` = ?"
-            const [result] = await connection.execute(statement, [university, status])
+        } else if (university && status) {
+            //有学校关键字，有状态
+            const offset = (pageNo - 1) * pageSize
+            const statement = "SELECT * FROM `user_student_info` WHERE `university_name` LIKE CONCAT('%',?,'%') AND `audit_status` = ? LIMIT ?,?"
+            const [result] = await connection.execute(statement, [university, status, offset, pageSize])
             return result
-        } else if (!university) {
-            const statement = "SELECT * FROM `user_student_info` WHERE `audit_status` = ?"
-            const [result] = await connection.execute(statement, [status])
+        } else if (!university && status) {
+            //没有学校关键字，有状态
+            const offset = (pageNo - 1) * pageSize
+            const statement = "SELECT * FROM `user_student_info` WHERE `audit_status` = ? LIMIT ?,?"
+            const [result] = await connection.execute(statement, [status, offset, pageSize])
             return result
         }
 
@@ -179,16 +199,19 @@ class adminService {
     //查找任务信息
     async searchTask (type, status, pageNo, pageSize) {
         if (!type && status) {
+            const offset = (pageNo - 1) * pageSize
             const statement = "SELECT * FROM `task` WHERE `status` = ? LIMIT ?,?"
-            const [result] = await connection.execute(statement, [status, pageNo, pageSize])
+            const [result] = await connection.execute(statement, [status, offset, pageSize])
             return result
         } else if (type && !status) {
+            const offset = (pageNo - 1) * pageSize
             const statement = "SELECT * FROM `task` WHERE `type` = ? LIMIT ?,?"
-            const [result] = await connection.execute(statement, [type, pageNo, pageSize])
+            const [result] = await connection.execute(statement, [type, offset, pageSize])
             return result
         } else {
+            const offset = (pageNo - 1) * pageSize
             const statement = "SELECT * FROM `task` WHERE `type` = ? AND `status` = ? LIMIT ?,?"
-            const [result] = await connection.execute(statement, [type, status, pageNo, pageSize])
+            const [result] = await connection.execute(statement, [type, status, offset, pageSize])
             return result
         }
     }

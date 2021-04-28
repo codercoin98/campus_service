@@ -28,6 +28,30 @@ class adminController {
             ctx.body = { admin_id, token }
         }
     }
+    //修改密码
+    async editPassword (ctx, next) {
+        const { old_password, new_password } = ctx.request.body
+        //检查旧密码是否一致
+        const res = await adminService.getAdmin(1)
+        console.log(res)
+        if (md5password(old_password) !== res.admin_password) {
+            //密码错误
+            const message = 'PASSWORD_WRONG'
+            ctx.body = { message }
+        } else {
+            const result = await adminService.updateAdminPassword(res.admin_account, md5password(new_password))
+            console.log(result)
+            if (result.affectedRows === 1) {
+                const message = 'UPDATE_SUCCESS'
+                ctx.body = { message }
+            } else {
+                const message = 'UPDATE_FAIL'
+                ctx.body = { message }
+            }
+        }
+
+
+    }
     //获取所有用户信息
     async getAllUser (ctx, next) {
         const pageNo = parseInt(ctx.request.query.pageNo)
@@ -183,6 +207,16 @@ class adminController {
         const result = await adminService.getBalanceTotal()
         ctx.body = result
     }
+    //查找用户
+    async searchUser (ctx, next) {
+        const keyword = ctx.request.query.keyword
+        const region = ctx.request.query.region
+        const pageNo = parseInt(ctx.request.query.pageNo)
+        const pageSize = parseInt(ctx.request.query.pageSize)
+        const result = await adminService.searchUser(keyword, region, pageNo, pageSize)
+        console.log(result)
+        ctx.body = result
+    }
     //按类型获取账户流水
     async searchBalance (ctx, next) {
         const type = parseInt(ctx.request.query.type)
@@ -193,13 +227,17 @@ class adminController {
     }
     //查找学生信息
     async searchStudent (ctx, next) {
-        let { university, status } = ctx.request.body
+        const university = ctx.request.query.university
+        let status = parseInt(ctx.request.query.status)
+        const pageNo = parseInt(ctx.request.query.pageNo)
+        const pageSize = parseInt(ctx.request.query.pageSize)
+        console.log(ctx.request.query)
         if (status) {
             status = parseInt(status)
         } else {
             status = 3
         }
-        const result = await adminService.searchStudent(university, status)
+        const result = await adminService.searchStudent(university, status, pageNo, pageSize)
         ctx.body = result
     }
     //查找任务信息
