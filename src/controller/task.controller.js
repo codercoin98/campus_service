@@ -5,10 +5,12 @@ const taskService = require('../service/task.service')
 const { FloatAdd, FloatSub } = require('../utils/balance.handle')
 const { changeUTC } = require('../utils/time.handle')
 const { TASK_FILE_PATH } = require('../constants/filePath')
+const userService = require('../service/user.service')
 class TaskController {
     async releaseTask (ctx, next) {
         //获取任务信息
         const task = ctx.request.body
+        console.log(task)
         //更改数据类型
         task.uid = parseInt(task.uid)
         if (task.copies) {
@@ -111,7 +113,6 @@ class TaskController {
     async getReceiveTaskProcess (ctx, next) {
         const tid = ctx.request.query.tid
         const result = await taskService.getReceiveTaskProcess(tid)
-        console.log(result)
         result.obtain_delivery_at = changeUTC(result.obtain_delivery_at)
         result.printed_at = changeUTC(result.printed_at)
         result.bought_at = changeUTC(result.bought_at)
@@ -234,6 +235,30 @@ class TaskController {
             ctx.body = { message, statusCode }
         }
 
+    }
+    //提交任务评价
+    async submitComment (ctx, next) {
+        const { receiver_id, releaser_id, task_number, rate, content } = ctx.request.body
+        console.log(receiver_id, releaser_id, task_number, rate, content)
+        //插入评论表
+        const res = await taskService.saveCommnet(receiver_id, releaser_id, task_number, rate, content)
+
+        if (res.affectedRows === 1) {
+            //插入成功,改变代跑用户的信誉分
+            //先获取对应用户的信誉分
+            const { credit_points } = await userService.getCreditPoints(receiver_id)
+
+            const new_credit_points = credit_points + rate
+
+            await userService.updateCreditPoints(receiver_id, new_credit_points)
+            const message = 'COMMENT_SUCCESS'
+            ctx.body = { message }
+
+        } else {
+            //插入失败
+            const message = 'COMMENT_FAIL'
+            ctx.body = { message }
+        }
     }
 }
 module.exports = new TaskController()

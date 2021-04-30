@@ -203,6 +203,12 @@ class taskService {
         const [result] = await connection.execute(statement, [task_number, releaser_id])
         return result[0]
     }
+    //用户评价
+    async saveCommnet (receiver_id, releaser_id, task_number, rate, content) {
+        const statement = "INSERT INTO `task_comment` (`task_number`,`rate`,`content`,`receiver_id`,`releaser_id`) VALUES (?,?,?,?,?)"
+        const [result] = await connection.execute(statement, [task_number, rate, content, receiver_id, releaser_id])
+        return result
+    }
 }
 
 module.exports = new taskService()

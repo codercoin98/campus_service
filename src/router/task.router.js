@@ -2,7 +2,16 @@ const path = require('path')
 const Router = require('koa-router')
 const koaBody = require('koa-body')
 const { verifyAuth } = require('../middleware/auth.middleware')
-const { releaseTask, getUserTaskList, getReceiveTaskProcess, getTaskDetails, getTaskFiles, updateTaskStatus, getTaskList, receiveTask, changeProcess } = require('../controller/task.controller')
+const { releaseTask,
+    getUserTaskList,
+    getReceiveTaskProcess,
+    getTaskDetails,
+    getTaskFiles,
+    updateTaskStatus,
+    getTaskList,
+    receiveTask,
+    changeProcess,
+    submitComment } = require('../controller/task.controller')
 const taskRouter = new Router({ prefix: '/task' })
 
 //保存任务文件
@@ -35,4 +44,7 @@ taskRouter.post('/receiveTask', receiveTask)
 
 //改变进程状态
 taskRouter.post('/changeProcess', changeProcess)
+
+//用户提交任务评价
+taskRouter.post('/submitComment', submitComment)
 module.exports = taskRouter

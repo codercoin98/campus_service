@@ -142,6 +142,8 @@ class adminController {
     //审核学生信息
     async handlePassAndReject (ctx, next) {
         const { uid, status } = ctx.request.body
+        //改变用户权限
+        await adminService.updateUserRight(uid)
         const result = await adminService.handlePassAndReject(uid, status)
         if (result.affectedRows === 1) {
             const statusCode = 200

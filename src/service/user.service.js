@@ -146,6 +146,19 @@ class UserService {
         const [result] = await connection.execute(statement, [tid])
         return result[0]
     }
+    //获取用户信誉分
+    async getCreditPoints(receiver_id) {
+        const statement = 'SELECT `credit_points` FROM `user` WHERE `uid` = ?'
+        const [result] = await connection.execute(statement, [receiver_id])
+        return result[0]
+    }
+    //改变用户信誉分
+    async updateCreditPoints(receiver_id,new_credit_points) {
+        const statement = 'UPDATE `user` SET `credit_points` = ? WHERE `uid` = ?'
+        const [result] = await connection.execute(statement, [new_credit_points, receiver_id])
+        return result
+    }
+
 }
 
 module.exports = new UserService()

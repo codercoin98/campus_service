@@ -87,6 +87,11 @@ class adminService {
         const [result] = await connection.execute(statement, [status, uid])
         return result
     }
+    //改变用户的权限
+    async updateUserRight (uid) {
+        const statement = 'UPDATE `user`SET `right` = ? WHERE `uid` = ?'
+        await connection.execute(statement, [2, uid])
+    }
     //获取用户账户流水
     async getBalanceInfo (pageNo, pageSize) {
         const offset = (pageNo - 1) * pageSize
