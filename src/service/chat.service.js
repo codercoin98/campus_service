@@ -46,6 +46,45 @@ class chatService {
         //返回结果
         return result
     }
+    //获取会话的最新的消息
+    async getLastMessage (uid, session_user) {
+        const statement = 'SELECT * FROM `user_chat_message` WHERE (`from_id` = ? AND `to_id` = ?) OR (`from_id` = ? AND `to_id` = ?) ORDER BY `send_at` DESC LIMIT 1'
+
+        const [result] = await connection.execute(statement, [uid, session_user, session_user, uid])
+        //返回结果
+        return result[0]
+    }
+    //创建用户会话
+    async createSession (from_id, to_id) {
+        //先判断是否有已建立的相同的会话
+        const statement1 = 'SELECT * FROM `user_session` WHERE (`from_user_id` = ? AND `to_user_id` = ?) OR (`from_user_id` = ? AND `to_user_id` = ?) LIMIT 1'
+
+        const [result] = await connection.execute(statement1, [from_id, to_id, to_id, from_id])
+        //没有记录，创建会话
+        if (result.length === 0) {
+            const statement2 = 'INSERT INTO `user_session` (`from_user_id`,`to_user_id`) VALUES (?,?)'
+
+            await connection.execute(statement2, [from_id, to_id])
+        }
+
+
+    }
+    //获取用户的所有会话
+    async getUserSesssion (uid) {
+        const statement = 'SELECT * FROM `user_session` WHERE `from_user_id` = ? OR `to_user_id` = ?'
+
+        const [result] = await connection.execute(statement, [uid, uid])
+
+        return result
+    }
+    //获取未读信息的条数
+    async getUnreadMessageNum (to_id, from_id) {
+        const statement = 'SELECT COUNT(*) AS num FROM `user_chat_message` WHERE `from_id` = ? AND `to_id` = ? AND `read` = 0'
+
+        const [result] = await connection.execute(statement, [from_id, to_id])
+
+        return result[0]
+    }
 }
 
 module.exports = new chatService()

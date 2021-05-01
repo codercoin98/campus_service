@@ -20,12 +20,11 @@ io(SOCKET_PORT, {
         console.log(socket_map)
         //获取发送用户和目标用户的socket id
         const to_socket_id = socket_map.get(data.to_id)
-        console.log(to_socket_id === undefined);
         const from_socket_id = socket_map.get(data.from_id)
         //保存到数据库
         const result = await chatService.saveSenderMessage(data)
         //获取刚保存消息的id
-        const {id} = await chatService.getLastMessageId(data)
+        const { id } = await chatService.getLastMessageId(data)
         data.message_id = id
         //保存成功，转发消息
         if (result.affectedRows === 1) {

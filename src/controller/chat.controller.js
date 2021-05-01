@@ -1,5 +1,5 @@
-const chatRouter = require('../router/chat.router')
 const chatService = require('../service/chat.service')
+const userService = require('../service/user.service')
 const { changeUTC } = require('../utils/time.handle')
 class ChatController {
     //根据用户id获取聊天记录
@@ -33,7 +33,6 @@ class ChatController {
     async getUnreadMessage (ctx, next) {
         const to_id = parseInt(ctx.request.query.to_id)
         const result = await chatService.getUnreadMessage(to_id)
-        console.log(result)
         if (result.length !== 0) {
             const message = 'HAVE'
             ctx.body = { message }
@@ -41,6 +40,46 @@ class ChatController {
             const message = 'HAVE_NOT'
             ctx.body = { message }
         }
+    }
+    //创建用户会话
+    async createSession (ctx, next) {
+        const { from_id, to_id } = ctx.request.body
+        const res = await chatService.createSession(from_id, to_id)
+        ctx.body = res
+    }
+    //获取用户所有的会话
+    async getUserSesssion (ctx, next) {
+        const uid = parseInt(ctx.request.query.uid)
+        //获取所有的会话
+        const result = await chatService.getUserSesssion(uid)
+        console.log(result)
+        const session = []
+        const session_item = {}
+        //根据会话获取对应会话用户的信息
+        for (const item of result) {
+            if (item.to_user_id === uid) {
+                //获取的是对方创建的会话
+                const to_user = await userService.getUserByUid(item.from_user_id)
+                session_item.user = to_user
+                //获取未读消息条数
+                const { num } = await chatService.getUnreadMessageNum(uid,item.from_user_id)
+                session_item.un_read_num = num
+            } else if (item.from_user_id === uid) {
+                //获取的是自己创建的会话
+                const to_user = await userService.getUserByUid(item.to_user_id)
+                session_item.user = to_user
+                 //获取未读消息条数
+                 const { num } = await chatService.getUnreadMessageNum(uid,item.to_user_id)
+                 session_item.un_read_num = num
+            }
+            //获取最新的聊天信息
+            const last_message = await chatService.getLastMessage(item.from_user_id, item.to_user_id)
+            last_message.send_at = changeUTC(last_message.send_at)
+            session_item.last_message = last_message
+            session.push(session_item)
+
+        }
+        ctx.body = session
     }
 }
 module.exports = new ChatController()
