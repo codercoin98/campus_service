@@ -53,10 +53,23 @@ class adminService {
         const [result] = await connection.execute(statement, [username])
         return result
     }
-    //获取用户投诉
-    async getComplainInfo (pageNo, pageSize) {
+    //回复用户受理
+    async replyComplaint(complaint_id,reply,reply_at) {
+        const statement = 'UPDATE `user_complaint` SET `have_deal` = 1, `reply` = ? , `reply_at` = ? WHERE `id` = ?'
+        const [result] = await connection.execute(statement, [reply,reply_at,complaint_id])
+        return result
+    }
+    //获取已受理的用户投诉
+    async getComplaintInfo (pageNo, pageSize) {
         const offset = (pageNo - 1) * pageSize
-        const statement = 'SELECT * FROM `user_complain` LIMIT ?,?'
+        const statement = 'SELECT * FROM `user_complaint` WHERE `have_deal` = 1 LIMIT ?,?'
+        const [result] = await connection.execute(statement, [offset, pageSize])
+        return result
+    }
+    //获取待处理的用户投诉
+    async getNewComplaintInfo(pageNo, pageSize) {
+        const offset = (pageNo - 1) * pageSize
+        const statement = 'SELECT * FROM `user_complaint` WHERE `have_deal` = 0 LIMIT ?,?'
         const [result] = await connection.execute(statement, [offset, pageSize])
         return result
     }
@@ -132,6 +145,18 @@ class adminService {
     }
 
     //获取total
+    //获取所有已受理投诉记录
+    async getComplaintTotal () {
+        const statement = 'SELECT COUNT(*) AS num FROM `user_complaint` WHERE `have_deal` = 1'
+        const [result] = await connection.execute(statement)
+        return result[0]
+    }
+    //获取待处理的投诉
+    async getNewComplaintTotal() {
+        const statement = 'SELECT COUNT(*) AS num FROM `user_complaint` WHERE `have_deal` = 0'
+        const [result] = await connection.execute(statement)
+        return result[0]
+    }
     //获取全部待审核学生条数
     async getNewStudentTotal () {
         const statement = 'SELECT COUNT(*) AS num FROM `user_student_info` WHERE `audit_status` = 0'

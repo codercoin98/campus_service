@@ -6,6 +6,7 @@ const { FloatAdd, FloatSub } = require('../utils/balance.handle')
 const { changeUTC } = require('../utils/time.handle')
 const { TASK_FILE_PATH } = require('../constants/filePath')
 const userService = require('../service/user.service')
+const taskRouter = require('../router/task.router')
 class TaskController {
     async releaseTask (ctx, next) {
         //获取任务信息
@@ -258,6 +259,42 @@ class TaskController {
             //插入失败
             const message = 'COMMENT_FAIL'
             ctx.body = { message }
+        }
+    }
+    //获取评价
+    async getTaskCommentStatus (ctx, next) {
+        const task_number = parseInt(ctx.request.query.task_number)
+        const releaser_id = parseInt(ctx.request.query.releaser_id)
+        const comment = await taskService.getComment(task_number, releaser_id)
+        console.log(comment)
+        if (comment === undefined) {
+            ctx.body = null
+        } else {
+            ctx.body = comment
+        }
+    }
+    //提交投诉
+    async submitComplaint (ctx, next) {
+        const { task_number, receiver_id, content, user_id } = ctx.request.body
+        //保存早数据库
+        const result = await taskService.saveComplaint(task_number, receiver_id, content, user_id)
+
+        if (result.affectedRows === 1) {
+            const message = 'SUBMIT_SUCCESS'
+            ctx.body = { message }
+        } else {
+            const message = 'SUBMIT_FAIL'
+            ctx.body = { message }
+        }
+    }
+    //获取任务投诉状态
+    async getComplaintStatus (ctx, next) {
+        const task_number = parseInt(ctx.request.query.task_number)
+        const uid = parseInt(ctx.request.query.uid)
+
+        const { num } = await taskService.getComplaint(task_number, uid)
+        ctx.body = {
+            num: num
         }
     }
 }

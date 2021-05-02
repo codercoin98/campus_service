@@ -117,28 +117,24 @@ class UserService {
         const [result] = await connection.execute(statement, [user_address.realname, user_address.telephone, user_address.university_name, user_address.address_details, user_address.isDefault, user_address.uid])
         return result
     }
-    //改变用户默认收件地址
-    async changeDefaultAddress (default_address_id, user_id) {
+    //修改用户地址
+    async updateAddress (user_address) {
+
+        const statement = 'UPDATE `user_address` SET `realname` = ?,`telephone` = ? ,`university_name` = ?,`address_details` = ?,`isDefault` = ? WHERE `id` = ? AND `user_id` = ?'
+        const [result] = await connection.execute(statement, [user_address.realname, user_address.telephone, user_address.university_name, user_address.address_details, user_address.isDefault, user_address.id, user_address.user_id])
+        return result
+    }
+    //判断用户是否已有默认地址
+    async checkDefault (uid) {
         //判断用户是否已设置默认地址
         const judgeStatement = 'SELECT 1 FROM `user_address` WHERE `user_id` = ? AND `isDefault` = 1 LIMIT 1'
-        const judgeResult = await connection.execute(judgeStatement, [user_id])
-        if (!judgeResult) {
-            //用户没有旧的默认地址
-            const createDefaultStatement = 'UPDATE `user_address` SET `isDefault` = 1 WHERE `id` = ? AND `user_id` = ?'
-            const [createResult] = await connection.execute(createDefaultStatement, [default_address_id, user_id])
-
-            return createResult
-        } else {
-            //用户有旧的默认地址先将旧的默认地址置为非默认
-            const changeOldStatement = 'UPDATE `user_address` SET `isDefault` = 0 WHERE `user_id` = ? AND `isDefault` = 1'
-            await connection.execute(changeOldStatement, [user_id])
-            const createDefaultStatement = 'UPDATE `user_address` SET `isDefault` = 1 WHERE `id` = ? AND `user_id` = ?'
-            const [createResult] = await connection.execute(createDefaultStatement, [default_address_id, user_id])
-
-            return createResult
-        }
-
-
+        const judgeResult = await connection.execute(judgeStatement, [uid])
+        return judgeResult
+    }
+    //改变默认地址为非默认
+    async changeDefaultAddress (uid) {
+        const statement = 'UPDATE `user_address` SET `isDefault` = 0 WHERE `user_id` = ? AND `isDefault` = 1'
+        await connection.execute(statement, [uid])
     }
     //通过tid查找代跑用户id
     async getReceiver (tid) {
@@ -147,13 +143,13 @@ class UserService {
         return result[0]
     }
     //获取用户信誉分
-    async getCreditPoints(receiver_id) {
+    async getCreditPoints (receiver_id) {
         const statement = 'SELECT `credit_points` FROM `user` WHERE `uid` = ?'
         const [result] = await connection.execute(statement, [receiver_id])
         return result[0]
     }
     //改变用户信誉分
-    async updateCreditPoints(receiver_id,new_credit_points) {
+    async updateCreditPoints (receiver_id, new_credit_points) {
         const statement = 'UPDATE `user` SET `credit_points` = ? WHERE `uid` = ?'
         const [result] = await connection.execute(statement, [new_credit_points, receiver_id])
         return result

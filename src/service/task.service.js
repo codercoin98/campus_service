@@ -209,6 +209,24 @@ class taskService {
         const [result] = await connection.execute(statement, [task_number, rate, content, receiver_id, releaser_id])
         return result
     }
+    //获取评价
+    async getComment (task_number, releaser_id) {
+        const statement = 'SELECT * FROM `task_comment` WHERE `task_number` = ? AND `releaser_id` = ?'
+        const [result] = await connection.execute(statement, [task_number, releaser_id])
+        return result[0]
+    }
+    //用户提交投诉
+    async saveComplaint (task_number, receiver_id, content, user_id) {
+        const statement = "INSERT INTO `user_complaint` (`task_number`,`content`,`receiver_id`,`user_id`) VALUES (?,?,?,?)"
+        const [result] = await connection.execute(statement, [task_number, content, receiver_id, user_id])
+        return result
+    }
+    //获取投诉信息
+    async getComplaint (task_number, uid) {
+        const statement = 'SELECT COUNT(*) as num FROM `user_complaint` WHERE `task_number` = ? AND `user_id` = ?'
+        const [result] = await connection.execute(statement, [task_number, uid])
+        return result[0]
+    }
 }
 
 module.exports = new taskService()

@@ -6,11 +6,15 @@ const { login,
     getUserByUsername,
     forbiddenUser,
     releaseUser,
-    getComplainInfo,
+    replyComplaint,
+    getComplaintInfo,
+    getNewComplaintInfo,
     getTaskInfo,
     getStudentInfo,
     getNewStudentInfo,
     handlePassAndReject,
+    getComplaintTotal,
+    getNewComplaintTotal,
     getStudentTotal,
     getNewStudentTotal,
     getUserTotal,
@@ -42,12 +46,15 @@ adminRouter.get('/getUserByUsername', verifyAuth, getUserByUsername)
 adminRouter.post('/forbiddenUser', verifyAuth, forbiddenUser)
 //解除用户禁用
 adminRouter.post('/releaseUser', verifyAuth, releaseUser)
+//回复受理
+adminRouter.post('/replyComplaint',verifyAuth,replyComplaint)
 //审核学生信息
 adminRouter.post('/handlePassAndReject', verifyAuth, handlePassAndReject)
 
 
 /* 分页查找 */
-adminRouter.get('/getComplainInfo', verifyAuth, getComplainInfo)
+adminRouter.get('/getComplaintInfo', verifyAuth, getComplaintInfo)
+adminRouter.get('/getNewComplaintInfo', verifyAuth, getNewComplaintInfo)
 adminRouter.get('/getTaskInfo', verifyAuth, getTaskInfo)
 adminRouter.get('/getStudentInfo', verifyAuth, getStudentInfo)
 adminRouter.get('/getNewStudentInfo', verifyAuth, getNewStudentInfo)
@@ -55,7 +62,7 @@ adminRouter.get('/getBalanceInfo', verifyAuth, getBalanceInfo)
 
 /* 表单的筛选查找 */
 //查找用户
-adminRouter.get('/searchUser',verifyAuth,searchUser)
+adminRouter.get('/searchUser', verifyAuth, searchUser)
 //查找对应的流水记录
 adminRouter.get('/searchBalance', verifyAuth, searchBalance)
 //查找学生信息
@@ -64,6 +71,9 @@ adminRouter.get('/searchStudent', verifyAuth, searchStudent)
 adminRouter.get('/searchTask', verifyAuth, searchTask)
 
 /* 获取对应表的记录数 */
+adminRouter.get('/getNewStudentTotal', verifyAuth, getNewStudentTotal)
+adminRouter.get('/getNewComplaintTotal', verifyAuth, getNewComplaintTotal)
+adminRouter.get('/getComplaintTotal', verifyAuth, getComplaintTotal)
 adminRouter.get('/getNewStudentTotal', verifyAuth, getNewStudentTotal)
 adminRouter.get('/getStudentTotal', verifyAuth, getStudentTotal)
 adminRouter.get('/getUserTotal', verifyAuth, getUserTotal)

@@ -104,18 +104,43 @@ class adminController {
                 statusCode
             }
         } else {
-            //成功
+            //失败
             const statusCode = 500
             ctx.body = {
                 statusCode
             }
         }
     }
-    //获取用户投诉
-    async getComplainInfo (ctx, next) {
+    //回复用户投诉
+    async replyComplaint (ctx, next) {
+        const { complaint_id, reply, reply_at } = ctx.request.body
+        const result = await adminService.replyComplaint(complaint_id, reply, reply_at)
+        if (result.affectedRows === 1) {
+            //成功
+            const statusCode = 200
+            ctx.body = {
+                statusCode
+            }
+        } else {
+            //失败
+            const statusCode = 500
+            ctx.body = {
+                statusCode
+            }
+        }
+    }
+    //获取对应页码的已受理的用户投诉
+    async getComplaintInfo (ctx, next) {
         const pageNo = parseInt(ctx.request.query.pageNo)
         const pageSize = parseInt(ctx.request.query.pageSize)
-        const result = await adminService.getComplainInfo(pageNo, pageSize)
+        const result = await adminService.getComplaintInfo(pageNo, pageSize)
+        ctx.body = result
+    }
+    //获取新提交的用户投诉
+    async getNewComplaintInfo (ctx, next) {
+        const pageNo = parseInt(ctx.request.query.pageNo)
+        const pageSize = parseInt(ctx.request.query.pageSize)
+        const result = await adminService.getNewComplaintInfo(pageNo, pageSize)
         ctx.body = result
     }
     //获取代跑任务
@@ -182,6 +207,16 @@ class adminController {
     //获取全部流水信息
     async getAllBalanceInfo (ctx, next) {
         const result = await adminService.getAllBalanceInfo()
+        ctx.body = result
+    }
+    //获取所有已受理的投诉记录数
+    async getComplaintTotal (ctx, next) {
+        const result = await adminService.getComplaintTotal()
+        ctx.body = result
+    }
+    //获取新的待处理的投诉记录
+    async getNewComplaintTotal (ctx, next) {
+        const result = await adminService.getNewComplaintTotal()
         ctx.body = result
     }
     //获取待审核学生信息条数

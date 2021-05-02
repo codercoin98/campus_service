@@ -14,6 +14,7 @@ const { register,
     getUserBalanceAndPayPasswordByUid,
     getUserAddress,
     addAddress,
+    updateAddress,
     changeDefaultAddress,
     getReceiver } = require('../controller/user.controller')
 const userRouter = new Router({ prefix: '/user' })
@@ -40,6 +41,7 @@ userRouter.get('/getVerifyStatusByUid', getVerifyStatusByUid)
 userRouter.get('/getUserBalanceAndPayPasswordByUid', getUserBalanceAndPayPasswordByUid)
 
 userRouter.post('/addAddress', verifyAuth, addAddress)
+userRouter.post('/updateAddress',verifyAuth,updateAddress)
 userRouter.get('/getUserAddress', verifyAuth, getUserAddress)
 
 userRouter.post('/changeDefaultAddress', changeDefaultAddress)

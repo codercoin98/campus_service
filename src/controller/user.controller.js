@@ -249,6 +249,54 @@ class UserController {
             ctx.body = { failMessage, statusCode }
         }
     }
+    //修改用户地址
+    async updateAddress (ctx, next) {
+
+        const user_address = ctx.request.body
+        user_address.isDefault === true ? user_address.isDefault = 1 : user_address.isDefault = 0
+        //处理数据
+        if (user_address.isDefault === 1) {
+            //判断是否已存在默认地址
+            const res = await userService.checkDefault(user_address.user_id)
+            if (!res) {
+                //用户没有旧的默认地址
+                //更新数据库
+                const result = await userService.updateAddress(user_address)
+                //返回结果
+                if (result.affectedRows === 1) {
+                    const successMessage = 'UPDATE_SUCCESS'
+                    ctx.body = { successMessage }
+                } else {
+                    const failMessage = 'UPDATE_FAIL'
+                    ctx.body = { failMessage }
+                }
+            } else {
+                //用户有旧的默认地址先将旧的默认地址置为非默认
+                await userService.changeDefaultAddress(user_address.user_id)
+                //更新地址
+                const result = await userService.updateAddress(user_address)
+                //返回结果
+                if (result.affectedRows === 1) {
+                    const successMessage = 'UPDATE_SUCCESS'
+                    ctx.body = { successMessage }
+                } else {
+                    const failMessage = 'UPDATE_FAIL'
+                    ctx.body = { failMessage }
+                }
+            }
+        } else {
+            //更新数据库
+            const result = await userService.updateAddress(user_address)
+            //返回结果
+            if (result.affectedRows === 1) {
+                const successMessage = 'UPDATE_SUCCESS'
+                ctx.body = { successMessage }
+            } else {
+                const failMessage = 'UPDATE_FAIL'
+                ctx.body = { failMessage }
+            }
+        }
+    }
     //改变默认收件地址
     async changeDefaultAddress (ctx, next) {
         const { default_address_id, user_id } = ctx.request.body
