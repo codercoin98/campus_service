@@ -17,7 +17,7 @@ io(SOCKET_PORT, {
     })
     //监听用户发送消息,并发送给对应的客户端
     socket.on('send', async (data) => {
-        console.log(socket_map)
+        // console.log(socket_map)
         //获取发送用户和目标用户的socket id
         const to_socket_id = socket_map.get(data.to_id)
         const from_socket_id = socket_map.get(data.from_id)

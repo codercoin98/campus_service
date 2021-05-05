@@ -126,9 +126,9 @@ class taskService {
         const [result] = await connection.execute(statement, [filename])
         return result[0]
     }
-    //检查所有任务的过期时间并更新状态
+    //检查所有闲置任务的过期时间并更新状态
     async checkExpirationTime () {
-        const statement = 'UPDATE `task` SET `status` = 4 WHERE `expiration_time` <= now()'
+        const statement = 'UPDATE `task` SET `status` = 4 WHERE `status` = 1 AND `expiration_time` <= now()'
         await connection.execute(statement)
     }
     //更新任务状态

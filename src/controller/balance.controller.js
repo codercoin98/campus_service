@@ -1,6 +1,6 @@
 const balanceService = require('../service/balance.service')
 const { FloatAdd, FloatSub } = require('../utils/balance.handle')
-class BalanceClass {
+class BalanceController {
     //创建用户支付密码
     async createPayPassword (ctx, next) {
         //获取用户支付密码和用户id
@@ -98,7 +98,7 @@ class BalanceClass {
         const user_id = parseInt(uid)
         //获取用户余额并更新
         const { balance } = await balanceService.getUserBalance(uid)
-        const new_balance = FloatSub(balance,new_withdraw_value)
+        const new_balance = FloatSub(balance, new_withdraw_value)
         const update_result = await balanceService.updateUserBalance(new_balance, uid)
         //更新成功则插入充值记录表，更新失败则报错
         if (update_result.affectedRows === 1) {
@@ -122,4 +122,4 @@ class BalanceClass {
     }
 }
 
-module.exports = new BalanceClass()
+module.exports = new BalanceController()

@@ -3,6 +3,7 @@ const kaoBody = require('koa-body')
 const cors = require('koa2-cors')
 const errorHandler = require('./error-handler')
 const useRouters = require('../router')
+require('./scheduler')
 require('./socket')
 const app = new Koa()
 
@@ -21,5 +22,4 @@ app.useRouters = useRouters
 app.useRouters()
 
 app.on('error', errorHandler)
-
 module.exports = app
