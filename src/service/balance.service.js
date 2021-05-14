@@ -34,6 +34,19 @@ class BalanceClass {
 
         return result[0]
     }
+    //获取用户余额记录总数
+    async getUserRecordTotal(uid) {
+        const statement = 'SELECT COUNT(*) AS num FROM `balance_record` WHERE `user_id` = ?'
+        const [result] = await connection.execute(statement,[uid])
+        return result[0]
+    }
+    //获取用户余额记录
+    async getUserRecord (uid, pageNo, pageSize) {
+        const offset = (pageNo - 1) * pageSize
+        const statement = 'SELECT * FROM `balance_record`  WHERE `user_id` = ? ORDER BY `createAt` DESC LIMIT ?,?'
+        const [result] = await connection.execute(statement, [uid, offset, pageSize])
+        return result
+    }
     //更新用户余额
     async updateUserBalance (new_balance, uid) {
         const statement = 'UPDATE `user` SET `balance` = ? WHERE `uid` = ? '
@@ -51,7 +64,7 @@ class BalanceClass {
         await connection.execute(statement, [type, new_withdraw_value, user_id])
     }
     //生成用户任务支出和任务收入记录
-    async createBalanceRecord(type,advance,uid) {
+    async createBalanceRecord (type, advance, uid) {
         const statement = 'INSERT INTO `balance_record` (`type`,`money`,`user_id`) VALUES (?,?,?)'
         await connection.execute(statement, [type, advance, uid])
     }

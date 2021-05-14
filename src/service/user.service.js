@@ -154,6 +154,12 @@ class UserService {
         const [result] = await connection.execute(statement, [new_credit_points, receiver_id])
         return result
     }
+    //获取禁用信息
+    async getUserForbiddenInfo (uid) {
+        const statement = 'SELECT * FROM `user_forbidden` WHERE `user_id` = ? ORDER BY `createAt` DESC LIMIT 1'
+        const [result] = await connection.execute(statement, [uid])
+        return result[0]
+    }
 
 }
 

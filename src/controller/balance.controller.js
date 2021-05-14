@@ -58,6 +58,20 @@ class BalanceController {
 
         ctx.body = result
     }
+    //获取用户余额记录总数
+    async getUserRecordTotal(ctx,next) {
+        const uid = ctx.request.params.uid
+        const result = await balanceService.getUserRecordTotal(uid)
+        ctx.body = result
+    }
+    //获取用户余额记录
+    async getUserRecord (ctx, next) {
+        const uid = ctx.request.params.uid
+        const pageNo = parseInt(ctx.request.query.pageNo)
+        const pageSize = parseInt(ctx.request.query.pageSize)
+        const result = await balanceService.getUserRecord(uid,pageNo,pageSize)
+        ctx.body = result
+    }
     //用户充值
     async recharge (ctx, next) {
         const { recharge_value, pay_methods, uid } = ctx.request.body

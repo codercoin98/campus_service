@@ -94,6 +94,15 @@ class UserController {
         ctx.body = fs.createReadStream(`${AVATAR_PATH}/${avatarInfo[0].filename}`)
 
     }
+    //获取用户禁用信息
+    async getUserForbiddenInfo (ctx, next) {
+        //获取用户id
+        const uid = parseInt(ctx.request.query.uid)
+
+        const result = await userService.getUserForbiddenInfo(uid)
+        console.log(result)
+        ctx.body = result
+    }
     //更新用户信息
     async updateUserInfo (ctx, next) {
         //1.获取用户提交的信息

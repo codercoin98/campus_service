@@ -6,6 +6,7 @@ const { register,
     emailRegister,
     getUserByUid,
     getAvatarInfo,
+    getUserForbiddenInfo,
     updateUserInfo,
     updatePassword,
     getUserRightByUsername,
@@ -27,6 +28,9 @@ userRouter.post('/emailRegister',handlePassword, emailRegister)
 userRouter.get('/getUserByUid', getUserByUid)
 
 userRouter.get('/:id/avatar', getAvatarInfo)
+
+//获取用户禁用信息
+userRouter.get('/getUserForbiddenInfo',getUserForbiddenInfo)
 
 userRouter.post('/updateUserInfo', verifyAuth, updateUserInfo)
 //修改密码

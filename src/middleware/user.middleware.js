@@ -1,7 +1,7 @@
 const errorType = require('../constants/error-types')
 const service = require('../service/user.service')
 const { md5password } = require('../utils/password.handle')
-
+/*验证用户注册*/
 const verifyUser = async (ctx, next) => {
     //获取用户名和密码
     const { username, password } = ctx.request.body
