@@ -25,7 +25,7 @@ class ChatController {
     //将最新消息标记为已读
     async readMessage (ctx, next) {
         const { message_id } = ctx.request.body
-        console.log(message_id)
+        console.log(ctx.request.body)
         const res = await chatService.readLastMessage(message_id)
         ctx.body = res
     }
@@ -52,7 +52,6 @@ class ChatController {
         const uid = parseInt(ctx.request.query.uid)
         //获取所有的会话
         const result = await chatService.getUserSesssion(uid)
-        console.log(result)
         const session = []
         const session_item = {}
         //根据会话获取对应会话用户的信息
@@ -62,15 +61,15 @@ class ChatController {
                 const to_user = await userService.getUserByUid(item.from_user_id)
                 session_item.user = to_user
                 //获取未读消息条数
-                const { num } = await chatService.getUnreadMessageNum(uid,item.from_user_id)
+                const { num } = await chatService.getUnreadMessageNum(uid, item.from_user_id)
                 session_item.un_read_num = num
             } else if (item.from_user_id === uid) {
                 //获取的是自己创建的会话
                 const to_user = await userService.getUserByUid(item.to_user_id)
                 session_item.user = to_user
-                 //获取未读消息条数
-                 const { num } = await chatService.getUnreadMessageNum(uid,item.to_user_id)
-                 session_item.un_read_num = num
+                //获取未读消息条数
+                const { num } = await chatService.getUnreadMessageNum(uid, item.to_user_id)
+                session_item.un_read_num = num
             }
             //获取最新的聊天信息
             const last_message = await chatService.getLastMessage(item.from_user_id, item.to_user_id)

@@ -12,8 +12,9 @@ const { releaseTask,
     receiveTask,
     changeProcess,
     submitComment,
-    getTaskCommentStatus,
+    getTaskComment,
     submitComplaint,
+    getCommentStatus,
     getComplaintStatus } = require('../controller/task.controller')
 const taskRouter = new Router({ prefix: '/task' })
 
@@ -51,9 +52,11 @@ taskRouter.post('/changeProcess', changeProcess)
 //用户提交任务评价
 taskRouter.post('/submitComment', submitComment)
 //获取评价状态
-taskRouter.get('/getTaskCommentStatus',getTaskCommentStatus)
+taskRouter.get('/getTaskComment', getTaskComment)
 //用户提交投诉
 taskRouter.post('/submitComplaint', verifyAuth, submitComplaint)
+//获取任务评价状态
+taskRouter.get('/getCommentStatus', getCommentStatus)
 //获取任务投诉状态
 taskRouter.get('/getComplaintStatus', getComplaintStatus)
 module.exports = taskRouter

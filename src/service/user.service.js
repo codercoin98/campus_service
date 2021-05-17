@@ -41,7 +41,7 @@ class UserService {
     async getUserByUserame (username) {
         const statement = 'SELECT * FROM `user` WHERE `username` = ?'
         const [result] = await connection.execute(statement, [username])
-        return result[0]
+        return result
     }
     //通过用户名查询用户权限
     async getUserRightByUsername (username) {
@@ -160,7 +160,12 @@ class UserService {
         const [result] = await connection.execute(statement, [uid])
         return result[0]
     }
-
+    //获取用户学校地址
+    async getUserUniversity(uid) {
+        const statement = 'SELECT `university_name` FROM `user_student_info` WHERE `user_id` = ?'
+        const [result] = await connection.execute(statement, [uid])
+        return result[0]
+    }
 }
 
 module.exports = new UserService()

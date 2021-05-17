@@ -156,6 +156,9 @@ class TaskController {
         let type = parseInt(ctx.request.query.type)
         let sortord = parseInt(ctx.request.query.sortord)
         const uid = parseInt(ctx.request.query.uid)
+        //1.获取用户的学校
+        const { university_name } = await userService.getUserUniversity(uid)
+        //2.获取对应学校用户发布的任务
         //按任务类型返回数据,0为代取快递，1为代打印，2为代购物，3为其他代跑
         switch (type) {
             case 0:
@@ -189,7 +192,7 @@ class TaskController {
         }
         //校验所有任务的过期时间并更新
         await taskService.checkExpirationTime()
-        const result = await taskService.getLatestTask(type, sortord, uid)
+        const result = await taskService.getLatestTask(type, sortord, uid, university_name)
         ctx.body = result
     }
 
@@ -262,7 +265,7 @@ class TaskController {
         }
     }
     //获取评价
-    async getTaskCommentStatus (ctx, next) {
+    async getTaskComment (ctx, next) {
         const task_number = parseInt(ctx.request.query.task_number)
         const releaser_id = parseInt(ctx.request.query.releaser_id)
         const comment = await taskService.getComment(task_number, releaser_id)
@@ -285,6 +288,16 @@ class TaskController {
         } else {
             const message = 'SUBMIT_FAIL'
             ctx.body = { message }
+        }
+    }
+    //获取任务评价状态
+    async getCommentStatus (ctx, next) {
+        const task_number = parseInt(ctx.request.query.task_number)
+        const uid = parseInt(ctx.request.query.uid)
+
+        const { num } = await taskService.getCommentStatus(task_number, uid)
+        ctx.body = {
+            num: num
         }
     }
     //获取任务投诉状态

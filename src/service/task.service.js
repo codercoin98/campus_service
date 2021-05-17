@@ -142,10 +142,17 @@ class taskService {
         }
     }
     //获取最新任务
-    async getLatestTask (type, sortord, uid) {
-        const statement = "SELECT * FROM `task` WHERE `type` = ? AND `status` = 1 AND `owner_id` NOT IN (?) ORDER BY ? DESC"
-        const [result] = await connection.execute(statement, [type, uid, sortord])
-        return result
+    async getLatestTask (type, sortord, uid, university_name) {
+        const statement = "SELECT * FROM `task` JOIN `user_student_info` ON `task`.`owner_id` = `user_student_info`.`user_id` WHERE `user_student_info`.`university_name` = ? AND `task`.`type` = ? AND `task`.`status` = 1 AND `task`.`owner_id` NOT IN (?) ORDER BY  CONCAT('`task`','.',?) DESC"
+        const [result] = await connection.execute(statement, [university_name, type, uid, sortord])
+        //获取记录总数
+        const statement2 = "SELECT COUNT(*) AS num FROM `task` JOIN `user_student_info` ON `task`.`owner_id` = `user_student_info`.`user_id` WHERE `user_student_info`.`university_name` = ? AND `task`.`type` = ? AND `task`.`status` = 1 AND `task`.`owner_id` NOT IN (?) ORDER BY  CONCAT('`task`','.',?) DESC"
+        const [result2] = await connection.execute(statement2, [university_name, type, uid, sortord])
+        let res = Array()
+        res[0] = result
+        res[1] = result2
+        return res
+
     }
     //用户接取任务,生成记录
     async createReceiveRecord (tid, receiver_id) {
@@ -221,9 +228,15 @@ class taskService {
         const [result] = await connection.execute(statement, [task_number, content, receiver_id, user_id])
         return result
     }
-    //获取投诉信息
+    //获取是否有评价记录
+    async getCommentStatus(task_number, uid) {
+        const statement = 'SELECT COUNT(*) as num FROM `task_comment` WHERE `task_number` = ? AND `releaser_id` = ? LIMIT 1'
+        const [result] = await connection.execute(statement, [task_number, uid])
+        return result[0]
+    }
+    //获取是否有投诉记录
     async getComplaint (task_number, uid) {
-        const statement = 'SELECT COUNT(*) as num FROM `user_complaint` WHERE `task_number` = ? AND `user_id` = ?'
+        const statement = 'SELECT COUNT(*) as num FROM `user_complaint` WHERE `task_number` = ? AND `user_id` = ? LIMIT 1'
         const [result] = await connection.execute(statement, [task_number, uid])
         return result[0]
     }

@@ -14,8 +14,8 @@ const verifyLogin = async (ctx, next) => {
     }
     //3.判断用户是否存在
     const result = await service.getUserByUserame(username)
-    const user = result
-    if (!user) {
+    const user = result[0]
+    if (!user || user === undefined) {
         const error = new Error(errorType.USER_DOES_NOT_EXISTS)
         return ctx.app.emit('error', error, ctx)
     }

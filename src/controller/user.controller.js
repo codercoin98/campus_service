@@ -76,8 +76,9 @@ class UserController {
         const uid = ctx.request.query.uid
         //操作数据库并处理返回的数据
         const result = await userService.getUserByUid(uid)
-        const BRITHDAY = TimeHandler(result.brithday)
-        result.brithday = BRITHDAY
+        if (result.brithday) {
+            result.brithday = TimeHandler(result.brithday)
+        }
         //返回数据
         ctx.body = result
     }
@@ -332,6 +333,12 @@ class UserController {
         const receiver_info = await userService.getUserByUid(receiver_id)
 
         ctx.body = receiver_info
+    }
+    //获取用户所在学校
+    async getUserUniversity (ctx, next) {
+        const uid = parseInt(ctx.request.params.uid)
+        const result = await userService.getUserUniversity(uid)
+        ctx.body = result
     }
 }
 
