@@ -245,18 +245,52 @@ class UserController {
             user_address.isDefault = 0
         }
         user_address.uid = parseInt(user_address.uid)
-        //插入数据库
-        const result = await userService.addAddress(user_address)
-
-        //返回结果
-        if (result.affectedRows === 1) {
-            const successMessage = 'ADD_SUCCESS'
-            const statusCode = 200
-            ctx.body = { successMessage, statusCode }
+        if (user_address.isDefault === 1) {
+            //判断是否已存在默认地址
+            const res = await userService.checkDefault(user_address.uid)
+            if (res.length === 0) {
+                //用户没有旧的默认地址
+                //插入数据库
+                const result = await userService.addAddress(user_address)
+                //返回结果
+                if (result.affectedRows === 1) {
+                    const successMessage = 'ADD_SUCCESS'
+                    const statusCode = 200
+                    ctx.body = { successMessage, statusCode }
+                } else {
+                    const failMessage = 'ADD_FAIL'
+                    const statusCode = 500
+                    ctx.body = { failMessage, statusCode }
+                }
+            } else {
+                //已经存在默认地址，将旧的默认地址改变为非默认，再插入数据库
+                await userService.changeDefaultAddress(user_address.uid)
+                //插入数据库
+                const result = await userService.addAddress(user_address)
+                //返回结果
+                if (result.affectedRows === 1) {
+                    const successMessage = 'ADD_SUCCESS'
+                    const statusCode = 200
+                    ctx.body = { successMessage, statusCode }
+                } else {
+                    const failMessage = 'ADD_FAIL'
+                    const statusCode = 500
+                    ctx.body = { failMessage, statusCode }
+                }
+            }
         } else {
-            const failMessage = 'ADD_FAIL'
-            const statusCode = 500
-            ctx.body = { failMessage, statusCode }
+            //插入数据库
+            const result = await userService.addAddress(user_address)
+            //返回结果
+            if (result.affectedRows === 1) {
+                const successMessage = 'ADD_SUCCESS'
+                const statusCode = 200
+                ctx.body = { successMessage, statusCode }
+            } else {
+                const failMessage = 'ADD_FAIL'
+                const statusCode = 500
+                ctx.body = { failMessage, statusCode }
+            }
         }
     }
     //修改用户地址
@@ -268,7 +302,7 @@ class UserController {
         if (user_address.isDefault === 1) {
             //判断是否已存在默认地址
             const res = await userService.checkDefault(user_address.user_id)
-            if (!res) {
+            if (res.length === 0) {
                 //用户没有旧的默认地址
                 //更新数据库
                 const result = await userService.updateAddress(user_address)

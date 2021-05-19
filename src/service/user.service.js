@@ -127,8 +127,8 @@ class UserService {
     //判断用户是否已有默认地址
     async checkDefault (uid) {
         //判断用户是否已设置默认地址
-        const judgeStatement = 'SELECT 1 FROM `user_address` WHERE `user_id` = ? AND `isDefault` = 1 LIMIT 1'
-        const judgeResult = await connection.execute(judgeStatement, [uid])
+        const judgeStatement = 'SELECT 1 AS num FROM `user_address` WHERE `user_id` = ? AND `isDefault` = 1 LIMIT 1'
+        const [judgeResult] = await connection.execute(judgeStatement, [uid])
         return judgeResult
     }
     //改变默认地址为非默认
@@ -161,7 +161,7 @@ class UserService {
         return result[0]
     }
     //获取用户学校地址
-    async getUserUniversity(uid) {
+    async getUserUniversity (uid) {
         const statement = 'SELECT `university_name` FROM `user_student_info` WHERE `user_id` = ?'
         const [result] = await connection.execute(statement, [uid])
         return result[0]

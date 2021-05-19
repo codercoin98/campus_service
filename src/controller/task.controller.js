@@ -16,6 +16,8 @@ class TaskController {
         task.uid = parseInt(task.uid)
         if (task.copies) {
             task.copies = parseInt(task.copies)
+        }
+        if (task.estimated_amount) {
             task.estimated_amount = parseFloat(task.estimated_amount)
         }
         task.commission = parseFloat(task.commission)

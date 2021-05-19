@@ -2,7 +2,7 @@ const connection = require('../app/database')
 class taskService {
     //保存用户发布的任务信息
     async saveTask (task) {
-        if (!task.copies || !task.estimated_amount) {
+        if (task.type === '代取快递') {
             //代取快递任务
             const statement = 'INSERT INTO `task` (`task_number`,`type`,`title`,`description`,`upload_file_url`,`commission`,`expiration_time`,`addressee`,`telephone`,`address`,`owner_id`) VALUES (?,?,?,?,?,?,?,?,?,?,?)'
             const [result] = await connection.execute(statement, [task.task_number, task.type, task.title, task.description, task.upload_file_url, task.commission, task.expiration_time, task.addressee, task.telephone, task.address, task.uid])
