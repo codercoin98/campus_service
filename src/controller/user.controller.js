@@ -374,6 +374,12 @@ class UserController {
         const result = await userService.getUserUniversity(uid)
         ctx.body = result
     }
+    //获取用户信誉分
+    async getUserCreditPoints(ctx,next) {
+        const uid = parseInt(ctx.request.params.uid)
+        const result = await userService.getCreditPoints(uid)
+        ctx.body = result
+    }
 }
 
 module.exports = new UserController()

@@ -18,7 +18,8 @@ const { register,
     updateAddress,
     changeDefaultAddress,
     getReceiver,
-    getUserUniversity } = require('../controller/user.controller')
+    getUserUniversity,
+    getUserCreditPoints } = require('../controller/user.controller')
 const userRouter = new Router({ prefix: '/user' })
 
 userRouter.post('/register', verifyUser, handlePassword, register)
@@ -54,4 +55,6 @@ userRouter.post('/changeDefaultAddress', changeDefaultAddress)
 userRouter.get('/getReceiver', getReceiver)
 //获取用户所在学校
 userRouter.get('/getUserUniversity/:uid', getUserUniversity)
+//获取用户信誉分
+userRouter.get('/getUserCreditPoints/:uid', getUserCreditPoints)
 module.exports = userRouter

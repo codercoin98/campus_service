@@ -95,12 +95,10 @@ class TaskController {
         if (list_type === 0) {
             //用户发布的任务
             const result = await taskService.getUserReleaseTaskList(type, status, uid)
-            console.log(result)
             ctx.body = result
         } else if (list_type === 1) {
             //用户发布的任务
             const result = await taskService.getUserReceiveTaskList(type, status, uid)
-            console.log(result)
             ctx.body = result
         }
     }

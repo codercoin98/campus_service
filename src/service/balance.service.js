@@ -29,15 +29,15 @@ class BalanceClass {
     }
     //获取账户余额
     async getUserBalance (uid) {
-        const statement = 'SELECT `balance`FROM `user` WHERE `uid` = ?'
+        const statement = 'SELECT `balance` FROM `user` WHERE `uid` = ?'
         const [result] = await connection.execute(statement, [uid])
 
         return result[0]
     }
     //获取用户余额记录总数
-    async getUserRecordTotal(uid) {
+    async getUserRecordTotal (uid) {
         const statement = 'SELECT COUNT(*) AS num FROM `balance_record` WHERE `user_id` = ?'
-        const [result] = await connection.execute(statement,[uid])
+        const [result] = await connection.execute(statement, [uid])
         return result[0]
     }
     //获取用户余额记录

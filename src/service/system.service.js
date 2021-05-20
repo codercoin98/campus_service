@@ -23,6 +23,12 @@ class systemService {
         const statement = 'UPDATE `task` SET `status` = 5 WHERE `status` = 2 AND `tid` = ?'
         await connection.execute(statement, [tid])
     }
+    //获取对应任务的接取用户的信誉分
+    async getReceiverByTid(tid) {
+        const statement = 'SELECT `receiver_id` FROM `user_receive_task` WHERE `tid` = ?'
+        const [result] = await connection.execute(statement, [tid])
+        return result
+    }
 }
 
 module.exports = new systemService()
