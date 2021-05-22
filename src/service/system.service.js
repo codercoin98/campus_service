@@ -1,10 +1,15 @@
 const connection = require('../app/database')
-
 class systemService {
-    //检查闲置任务是否过期，过期则改变任务状态
-    async checkExpirationTime () {
-        const statement = 'UPDATE `task` SET `status` = 4 WHERE `status` = 1 AND `expiration_time` <= now()'
-        await connection.execute(statement)
+    //获取所有闲置任务
+    async getAllFreeTask () {
+        const statement = 'SELECT * FROM `task` WHERE `status` = 1 '
+        const [result] = await connection.execute(statement)
+        return result
+    }
+    //任务过期，改变状态
+    async updateFreeTaskStatus (tid) {
+        const statement = 'UPDATE `task` SET `status` = 4 WHERE `tid` = ?'
+        await connection.execute(statement, [tid])
     }
     //获取所有的进行中的任务
     async getALLReceiveTask () {
@@ -24,7 +29,7 @@ class systemService {
         await connection.execute(statement, [tid])
     }
     //获取对应任务的接取用户的信誉分
-    async getReceiverByTid(tid) {
+    async getReceiverByTid (tid) {
         const statement = 'SELECT `receiver_id` FROM `user_receive_task` WHERE `tid` = ?'
         const [result] = await connection.execute(statement, [tid])
         return result
