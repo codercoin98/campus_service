@@ -358,6 +358,21 @@ class UserController {
             ctx.body = { failMessage, statusCode }
         }
     }
+    //删除用户地址
+    async deleteAddress(ctx,next) {
+        const address_id = ctx.request.body.address_id
+        const uid = ctx.request.body.uid
+        console.log(address_id,uid);
+        const result = await userService.deleteAddress(address_id,uid)
+        console.log(result);
+        if(result.affectedRows === 1) {
+            const message = 'DELETE_SUCCESS'
+            ctx.body = message
+        }else {
+            const message = 'DELETE_FAIL'
+            ctx.body = message
+        }
+    }
     //通过任务id获取代跑用户
     async getReceiver (ctx, next) {
         const tid = parseInt(ctx.request.query.tid)

@@ -16,6 +16,7 @@ const { register,
     getUserAddress,
     addAddress,
     updateAddress,
+    deleteAddress,
     changeDefaultAddress,
     getReceiver,
     getUserUniversity,
@@ -48,6 +49,7 @@ userRouter.get('/getUserBalanceAndPayPasswordByUid', getUserBalanceAndPayPasswor
 
 userRouter.post('/addAddress', verifyAuth, addAddress)
 userRouter.post('/updateAddress', verifyAuth, updateAddress)
+userRouter.post('/deleteAddress', verifyAuth, deleteAddress)
 userRouter.get('/getUserAddress', verifyAuth, getUserAddress)
 
 userRouter.post('/changeDefaultAddress', changeDefaultAddress)

@@ -124,6 +124,12 @@ class UserService {
         const [result] = await connection.execute(statement, [user_address.realname, user_address.telephone, user_address.university_name, user_address.address_details, user_address.isDefault, user_address.id, user_address.user_id])
         return result
     }
+    //删除用户地址
+    async deleteAddress (address_id, uid) {
+        const statement = 'DELETE FROM `user_address` WHERE `id` = ? AND `user_id` = ?'
+        const [result] = await connection.execute(statement, [address_id, uid])
+        return result
+    }
     //判断用户是否已有默认地址
     async checkDefault (uid) {
         //判断用户是否已设置默认地址

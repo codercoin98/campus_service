@@ -6,8 +6,9 @@ const { FloatAdd, FloatSub } = require('../utils/balance.handle')
 const { changeUTC } = require('../utils/time.handle')
 const { TASK_FILE_PATH } = require('../constants/filePath')
 const userService = require('../service/user.service')
-const taskRouter = require('../router/task.router')
+const { checkExpirationTime } = require('../middleware/system.middleware')
 class TaskController {
+    //发布任务
     async releaseTask (ctx, next) {
         //获取任务信息
         const task = ctx.request.body
@@ -86,6 +87,7 @@ class TaskController {
 
     //获取用户已发布的任务,获取用户已接取的任务
     async getUserTaskList (ctx, next) {
+        checkExpirationTime()
         let { list_type, type, status, uid } = ctx.request.query
         list_type = parseInt(list_type)
         type = parseInt(type)
@@ -190,8 +192,7 @@ class TaskController {
             default:
                 break
         }
-        //校验所有任务的过期时间并更新
-        await taskService.checkExpirationTime()
+        checkExpirationTime()
         const result = await taskService.getLatestTask(type, sortord, uid, university_name)
         ctx.body = result
     }
