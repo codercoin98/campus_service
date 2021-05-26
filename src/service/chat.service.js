@@ -52,7 +52,7 @@ class chatService {
 
         const [result] = await connection.execute(statement, [uid, session_user, session_user, uid])
         //返回结果
-        return result[0]
+        return result
     }
     //创建用户会话
     async createSession (from_id, to_id) {
@@ -60,21 +60,20 @@ class chatService {
         const statement1 = 'SELECT * FROM `user_session` WHERE (`from_user_id` = ? AND `to_user_id` = ?) OR (`from_user_id` = ? AND `to_user_id` = ?) LIMIT 1'
 
         const [result] = await connection.execute(statement1, [from_id, to_id, to_id, from_id])
-        //没有记录，创建会话
         if (result.length === 0) {
+            //没有记录，创建会话    
             const statement2 = 'INSERT INTO `user_session` (`from_user_id`,`to_user_id`) VALUES (?,?)'
 
             await connection.execute(statement2, [from_id, to_id])
+        } else {
+            return
         }
-
 
     }
     //获取用户的所有会话
     async getUserSesssion (uid) {
-        const statement = 'SELECT * FROM `user_session` WHERE `from_user_id` = ? OR `to_user_id` = ?'
-
-        const [result] = await connection.execute(statement, [uid, uid])
-
+        const statement1 = 'SELECT * FROM `user_session` WHERE `from_user_id` = ? OR `to_user_id` = ?'
+        const [result] = await connection.execute(statement1, [uid, uid])
         return result
     }
     //获取未读信息的条数

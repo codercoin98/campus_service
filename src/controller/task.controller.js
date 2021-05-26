@@ -46,8 +46,8 @@ class TaskController {
         if (result.affectedRows === 1) {
             //任务发布成功
             //生成预付款记录,代取快递没有预付金
-            let advance = null
-            if (task.copies) {
+            let advance = 0
+            if (task.copies || task.estimated_amount) {
                 advance = FloatAdd(task.estimated_amount, task.commission)
             } else {
                 advance = task.commission
@@ -55,8 +55,8 @@ class TaskController {
             await balanceService.createAdvance(task.uid, task.task_number, advance)
             //对用户余额进行更改
             const { balance } = await balanceService.getUserBalance(task.uid)
-            const new_balance = FloatSub(balance, advance)
-            const updateRes = await balanceService.updateUserBalance(new_balance, task.uid)
+            const new_balance = FloatSub(parseFloat(balance), parseFloat(advance))
+            const updateRes = await balanceService.updateUserBalance(parseFloat(new_balance), task.uid)
             //生成余额记录-类型为3：任务支出
             const type = 3
             await balanceService.createBalanceRecord(type, advance, task.uid)

@@ -28,7 +28,8 @@ class UserController {
             if (verifyCode === code) {
                 //检查邮箱是否已经被使用
                 const userResult = await userService.getUserByUserame(username)
-                if (userResult) {
+                console.log(userResult);
+                if (userResult.length !== 0) {
                     //邮箱已经被使用已经存在
                     const error = new Error(errorType.USER_ALREADY_EXISTS)
                     return ctx.app.emit('error', error, ctx)
