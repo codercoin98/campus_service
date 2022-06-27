@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
   port: 465, // 端口就是465
   auth: {
     user: '1015761882@qq.com', // 账号
-    pass: 'jqwmbjiahdjbbdjc', // 授权码,
+    pass: '', // 授权码，自备,
   },
 });
 
